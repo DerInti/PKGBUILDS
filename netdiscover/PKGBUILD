@@ -1,0 +1,33 @@
+# PKGBUILD for netdiscover 0.3-beta6
+
+pkgname=netdiscover
+pkgver=0.3
+pkgrel=6
+pkgdesc="Active/passive ARP reconnaissance tool"
+arch=('i686' 'x86_64')
+url="http://nixgeneration.com/~jaime/netdiscover/"
+license=('GPL2')
+depends=('libnet' 'libpcap')
+source=(http://nixgeneration.com/~jaime/netdiscover/releases/$pkgname-$pkgver-beta$pkgrel.tar.gz)
+md5sums=('0919227a91ecaeeb2443cff249417be2')
+
+build() {
+  cd $pkgname-$pkgver-beta$pkgrel
+
+  CPPFLAGS="-D_FORTIFY_SOURCE=0" ./configure \
+    --prefix=/usr --mandir=/usr/share/man
+
+  make
+}
+
+package() {
+  cd $pkgname-$pkgver-beta$pkgrel
+
+  make DESTDIR="$pkgdir" install
+  # tidy up in $pkgdir
+  rm -rf $pkgdir/usr/doc
+
+  for i in AUTHORS NEWS COPYING README ChangeLog TODO INSTALL; do
+    install -Dm644 $i "$pkgdir"/usr/share/doc/$pkgname/$i
+  done
+}
